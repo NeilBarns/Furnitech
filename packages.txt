@@ -1,0 +1,11 @@
+expo-font
+expo-app-loading
+react-native-root-siblings
+react-native-size-matters
+react-native-vector-icons
+react-native-raw-bottom-sheet
+expo-location
+react-native-smartconfig-quan
+react-native-netinfo
+@react-native-community/netinfo (expo)
+expo-location

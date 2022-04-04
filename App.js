@@ -5,6 +5,11 @@ import { useFonts } from 'expo-font';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import HomeScreen from './src/screens/Home/HomeScreen'
 import { ScaledSheet } from 'react-native-size-matters';
+import useModalVisibilityGlobal from './src/hooks/useModalVisibilityGlobal';
+import useNetInfoGlobal from './src/hooks/useNetInfoGlobal';
+import { useModalContext, useNetInfoContext } from './src/hooks/ContextProvider';
+
+
 
 export default function App() {
   let [fontsLoaded] = useFonts({
@@ -12,14 +17,22 @@ export default function App() {
     'Poppins-Regular': require('./assets/fonts/Poppins-Regular.ttf'),
   });
 
+
+  const ModalVisibilityGlobal = useModalVisibilityGlobal();
+  const NetInfoGlobal = useNetInfoGlobal(); 
+
   if (!fontsLoaded) {
     return <AppLoading />;
   } else {
     return <RootSiblingParent>
       {/* <View style={styles.container}> */}
-        {/* <Text>Open up App.js to start working on your app!</Text>
+      {/* <Text>Open up App.js to start working on your app!</Text>
         <StatusBar style="auto" /> */}
-        <HomeScreen />
+      <useModalContext.Provider value={ModalVisibilityGlobal}>
+        <useNetInfoContext.Provider value={NetInfoGlobal}>
+          <HomeScreen />
+        </useNetInfoContext.Provider>
+      </useModalContext.Provider>
       {/* </View> */}
     </RootSiblingParent>;
   }

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState, useContext } from 'react'
 import { Text, View, StatusBar, Pressable, ScrollView, Image, Alert } from 'react-native'
 import Styles from './HomeScreenStyles'
 
@@ -8,9 +8,15 @@ import DHT from '../../components/Home/DHT';
 import BottomSheetDeviceList from '../../components/Home/BottomSheetDeviceList';
 
 
-import NetInfo from "@react-native-community/netinfo";
-import * as Location from 'expo-location';
+//MODAL
+import AddDeviceModal from '../../components/Home/modals/AddDeviceModal';
+
+//CONTEXTS
+import { useModalContext, useNetInfoContext } from '../../hooks/ContextProvider';
+
+//EXTERNAL IMPORTS
 import SmartConfig from 'react-native-smartconfig-quan';
+import NetInfo from '@react-native-community/netinfo';
 
 const tempDevices = [
     {
@@ -71,13 +77,7 @@ const DeviceCard = ({ categoryName, imageUrl, numberofDevices, refRBSheet, ssid,
 
     return (
         <Pressable style={Styles.device}
-            // onPress={() => (refRBSheet.current.open())}>
             onPress={() => {
-                // NetInfo.fetch()
-                //     .then((state) => {
-                //         console.log(state)
-                //     })
-
                 // Smartconfig.start({
                 //     // type: 'esptouch', //or airkiss, now doesn't not effect
                 //     ssid: 'HUAWEI-2.4G-h3YP',
@@ -94,7 +94,7 @@ const DeviceCard = ({ categoryName, imageUrl, numberofDevices, refRBSheet, ssid,
                 // }).catch(err => {
                 //     console.log(err);
                 // });
-                config();
+                // config();
             }}>
             <View style={Styles.actualDevice}>
                 <View style={Styles.deviceCountContainer}>
@@ -124,60 +124,16 @@ const DeviceCard = ({ categoryName, imageUrl, numberofDevices, refRBSheet, ssid,
 const HomeScreen = () => {
 
     const refRBSheet = useRef();
-    const [netinfo, setNetInfo] = useState('');
-    const [netInfoSSID, setNetInfoSSID] = useState();
-    const [netInfoBSSID, setNetInfoBSSID] = useState();
+
+    const { addDeviceModalVisibility } = useContext(useModalContext);
+    const { network_changes } = useContext(useNetInfoContext);
+
 
     useEffect(() => {
-        const wifiDetails = NetInfo.addEventListener((state) => {
-            setNetInfo(`connectionType:${state.type}
-          isConnected:${state.isConnected}
-          SSID:${state.details.ssid}`);
-
-            setNetInfoSSID(state.details.ssid);
-            setNetInfoBSSID(state.details.bssid);
-        })
-        return () => {
-            wifiDetails()
-        }
-    }, [netinfo.isConnected])
-
-
-
-
-    const [location, setLocation] = useState(null);
-    const [errorMsg, setErrorMsg] = useState(null);
-
-    useEffect(() => {
-        (async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                setErrorMsg('Permission to access location was denied');
-                return;
-            }
-
-            let location = await Location.getCurrentPositionAsync({});
-            setLocation(location);
-        })();
-    }, []);
-
-    let text = 'Waiting..';
-    if (errorMsg) {
-        text = errorMsg;
-    } else if (location) {
-        text = JSON.stringify(location);
-    }
-
-
-    const handleGetNetInfo = () => {
-        NetInfo.fetch()
-            .then((state) => {
-                console.log(state)
-            })
-    };
-
-    useEffect(() => {
-        handleGetNetInfo();
+        const unsubscribe = NetInfo.addEventListener(state => {
+            let isConnected = state.isConnected;
+            network_changes({ type: 'saveNetworkConnected', payload: { isConnected } });
+        });
     }, [])
 
     return (
@@ -203,14 +159,16 @@ const HomeScreen = () => {
                             imageUrl={category.imageUrl}
                             numberofDevices={category.numberofDevices}
                             refRBSheet={refRBSheet}
-                            ssid={netInfoSSID}
-                            bssid={netInfoBSSID} />
+                            ssid
+                            bssid />
                     ))}
 
                 </View>
             </ScrollView>
 
             <BottomSheetDeviceList refRBSheet={refRBSheet} />
+
+            <AddDeviceModal />
 
         </View>
     )
