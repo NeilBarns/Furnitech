@@ -31,6 +31,53 @@ const DetectWiFIDevicesStyle = ScaledSheet.create({
         fontSize: '15@s'
     },
 
+    confirmDeviceContainer: {
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%'
+    },
+
+    foundLbl: {
+        fontFamily: 'Nunito-Bold',
+        fontWeight: 'bold'
+    },
+
+    deviceName: {
+        fontSize: '18@s'
+    },
+
+    categoryImageContainer: {
+        marginTop: '10@s',
+        padding: '10@s',
+        width: '100%',
+        height: '85@s'
+    },
+
+    categoryImage: {
+        width: '100%',
+        height: '100%'
+    },
+
+    acceptDeviceBtnContainer: {
+        marginTop: '20@s',
+        width: '100%',
+        paddingHorizontal: '45@s'
+    },
+
+    acceptDeviceBtn: {
+        backgroundColor: '#d2f25e',
+        paddingVertical: '12@s',
+        borderRadius: '5@s',
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 1
+    },
+
+    acceptDeviceLabel: {
+        fontWeight: 'bold',
+        letterSpacing: '1@s'
+    },
 });
 
 export default DetectWiFIDevicesStyle;
