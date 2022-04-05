@@ -5,9 +5,16 @@ import { useFonts } from 'expo-font';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import HomeScreen from './src/screens/Home/HomeScreen'
 import { ScaledSheet } from 'react-native-size-matters';
+
+//CONTEXTS
 import useModalVisibilityGlobal from './src/hooks/useModalVisibilityGlobal';
 import useNetInfoGlobal from './src/hooks/useNetInfoGlobal';
-import { useModalContext, useNetInfoContext } from './src/hooks/ContextProvider';
+import useDeviceDiscovery from './src/hooks/useDeviceDiscovery';
+import {
+  useModalContext,
+  useNetInfoContext,
+  useDeviceDiscoveryContext
+} from './src/hooks/ContextProvider';
 
 
 
@@ -19,7 +26,8 @@ export default function App() {
 
 
   const ModalVisibilityGlobal = useModalVisibilityGlobal();
-  const NetInfoGlobal = useNetInfoGlobal(); 
+  const NetInfoGlobal = useNetInfoGlobal();
+  const DiscoveredDeviceGlobal = useDeviceDiscovery();
 
   if (!fontsLoaded) {
     return <AppLoading />;
@@ -30,7 +38,9 @@ export default function App() {
         <StatusBar style="auto" /> */}
       <useModalContext.Provider value={ModalVisibilityGlobal}>
         <useNetInfoContext.Provider value={NetInfoGlobal}>
-          <HomeScreen />
+          <useDeviceDiscoveryContext.Provider value={DiscoveredDeviceGlobal}>
+            <HomeScreen />
+          </useDeviceDiscoveryContext.Provider>
         </useNetInfoContext.Provider>
       </useModalContext.Provider>
       {/* </View> */}

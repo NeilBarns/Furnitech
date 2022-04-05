@@ -15,7 +15,6 @@ import AddDeviceModal from '../../components/Home/modals/AddDeviceModal';
 import { useModalContext, useNetInfoContext } from '../../hooks/ContextProvider';
 
 //EXTERNAL IMPORTS
-import SmartConfig from 'react-native-smartconfig-quan';
 import NetInfo from '@react-native-community/netinfo';
 
 const tempDevices = [
@@ -42,59 +41,10 @@ const tempDevices = [
 
 const DeviceCard = ({ categoryName, imageUrl, numberofDevices, refRBSheet, ssid, bssid }) => {
 
-    let foundDevice = false;
-
-    const wifiName = ssid;
-    const wifiPass = 'wEM4nxgq';
-    // you can random bssid of wifi, but it need correct format
-    const wifiBssid = bssid;
-
-    // timeout not work with android, on android default is 45s
-    const TIME_OUT_SMART_CONFIG = 30 * 1000; // 30s
-
-    function config() {
-        console.log('configuring...');
-        foundDevice = false;
-
-        SmartConfig.start(wifiName, wifiBssid, wifiPass, TIME_OUT_SMART_CONFIG, (event) => {
-            console.log(event);
-            let { eventName, data } = event;
-            if (eventName === 'onFoundDevice') {
-                foundDevice = true;
-                data = JSON.parse(data);
-
-                // data in event is ip of ESP
-                console.log(data);
-                // console.log('Found device\nip: ' + data.ip + '\nbssid: ' + data.bssid);
-            } else {
-                if (!foundDevice) {
-                    console.log('Not found');
-                }
-            }
-        });
-    }
-
-
     return (
         <Pressable style={Styles.device}
             onPress={() => {
-                // Smartconfig.start({
-                //     // type: 'esptouch', //or airkiss, now doesn't not effect
-                //     ssid: 'HUAWEI-2.4G-h3YP',
-                //     bssid: 'e4:83:26:eb:d9:54', //"" if not need to filter (don't use null)
-                //     password: 'wEM4nxgq',
-                //     // timeout: 50000 //now doesn't not effect
-                //     // ssid: 'HUAWEI-2.4G-h3YP',
-                //     // password: 'wEM4nxgq',
-                //     // bssid,
-                //     count: 1,
-                //     cast: 'broadcast'
-                // }).then(data => {
-                //     console.log(data);
-                // }).catch(err => {
-                //     console.log(err);
-                // });
-                // config();
+               
             }}>
             <View style={Styles.actualDevice}>
                 <View style={Styles.deviceCountContainer}>
