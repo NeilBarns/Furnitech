@@ -9,3 +9,4 @@ react-native-smartconfig-quan
 react-native-netinfo
 @react-native-community/netinfo (expo)
 expo-location
+@react-native-async-storage/async-storage

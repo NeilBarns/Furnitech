@@ -12,10 +12,17 @@ import BottomSheetDeviceList from '../../components/Home/BottomSheetDeviceList';
 import AddDeviceModal from '../../components/Home/modals/AddDeviceModal';
 
 //CONTEXTS
-import { useModalContext, useNetInfoContext } from '../../hooks/ContextProvider';
+import {
+    useModalContext,
+    useNetInfoContext,
+    useUserManagementContext
+} from '../../hooks/ContextProvider';
 
 //EXTERNAL IMPORTS
 import NetInfo from '@react-native-community/netinfo';
+
+//ASYNC STORAGE
+import AsyncStorageOperations from '../../hooks/AsyncStorageOperations';
 
 const tempDevices = [
     {
@@ -44,7 +51,7 @@ const DeviceCard = ({ categoryName, imageUrl, numberofDevices, refRBSheet, ssid,
     return (
         <Pressable style={Styles.device}
             onPress={() => {
-               
+
             }}>
             <View style={Styles.actualDevice}>
                 <View style={Styles.deviceCountContainer}>
@@ -77,7 +84,18 @@ const HomeScreen = () => {
 
     const { addDeviceModalVisibility } = useContext(useModalContext);
     const { network_changes } = useContext(useNetInfoContext);
+    const { user_changes } = useContext(useUserManagementContext);
 
+    const { getUserID } = AsyncStorageOperations();
+
+    var userID;
+
+    useEffect(() => {
+        (async () => {
+            userID = await getUserID();
+            user_changes({ type: 'saveUserId', payload: { userID }})
+        })();
+    }, []);
 
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener(state => {

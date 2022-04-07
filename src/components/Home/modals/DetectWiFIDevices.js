@@ -1,17 +1,23 @@
 import { View, Text, Modal, Image, TouchableOpacity } from 'react-native'
 import React, { useContext, useState } from 'react'
-import { fetchDeviceByIPAddress } from '../../../hooks/APIInterface';
+import {
+    fetchDeviceByIPAddress,
+    insertUserDevice
+} from '../../../hooks/APIInterface';
 
 //STYLE
 import Style from './DetectWiFIDevicesStyle'
 
 //CONTEXTS
-import { useModalContext, useNetInfoContext, useDeviceDiscoveryContext } from '../../../hooks/ContextProvider';
+import {
+    useModalContext,
+    useNetInfoContext,
+    useDeviceDiscoveryContext,
+    useUserManagementContext
+} from '../../../hooks/ContextProvider';
 
 //EXTERNAL IMPORTS
 import SmartConfig from 'react-native-smartconfig-quan';
-
-
 
 const SmartConfiguration = (ssid,
     bssid,
@@ -33,7 +39,7 @@ const SmartConfiguration = (ssid,
             data = JSON.parse(data);
 
             let ipAddress = data.ip;
-          
+
             (async () => {
                 var discoveredDevice = await fetchDeviceByIPAddress({ ipAddress: ipAddress });
                 var discoveredDeviceItemName = discoveredDevice[0].itemName;
@@ -63,8 +69,10 @@ const SmartConfiguration = (ssid,
 
 
 const DetectWiFIDevices = () => {
+
     const { WiFiDeviceDetectionModalVisibility,
         action_changes } = useContext(useModalContext);
+    const { loggedUserID } = useContext(useUserManagementContext);
 
     const { hasWifiDeviceDiscovered,
         discoveredWifiDevice,
@@ -77,6 +85,11 @@ const DetectWiFIDevices = () => {
 
     const { ssid, bssid, wifiPwd } = useContext(useNetInfoContext);
 
+    const saveUserDevice = async () => {
+        (async () => {
+            await insertUserDevice({ userID: loggedUserID, deviceID: discoveredWifiDeviceID });
+        })();
+    }
 
 
     return (
@@ -85,14 +98,15 @@ const DetectWiFIDevices = () => {
             animationType={'slide'}
             statusBarTranslucent={true}
             onShow={() => {
-                (async () => {
-                    await SmartConfiguration(ssid,
-                        bssid,
-                        wifiPwd,
-                        device_discovery_changes,
-                        discoveredWifiDevice);
-                })();
+                // (async () => {
+                //     await SmartConfiguration(ssid,
+                //         bssid,
+                //         wifiPwd,
+                //         device_discovery_changes,
+                //         discoveredWifiDevice);
+                // })();
 
+                saveUserDevice();
             }}>
             <View style={Style.container}>
                 <View style={Style.centerContainer}>
@@ -113,7 +127,10 @@ const DetectWiFIDevices = () => {
                                     resizeMode={'contain'} />
                             </View>
                             <View style={Style.acceptDeviceBtnContainer}>
-                                <TouchableOpacity style={Style.acceptDeviceBtn}>
+                                <TouchableOpacity style={Style.acceptDeviceBtn}
+                                    onPress={() => {
+                                        saveUserDevice();
+                                    }}>
                                     <Text style={Style.acceptDeviceLabel}>CONFIRM DEVICE</Text>
                                 </TouchableOpacity>
                             </View>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const useDeviceDiscovery = () => {
+const useDeviceDiscoveryGlobal = () => {
 
     const [hasWifiDeviceDiscovered, setHasWifiDeviceDiscovered] = useState(false);
     const [discoveredWifiDevice, setDiscoveredWifiDevice] = useState();
@@ -45,4 +45,4 @@ const useDeviceDiscovery = () => {
     };
 }
 
-export default useDeviceDiscovery
+export default useDeviceDiscoveryGlobal

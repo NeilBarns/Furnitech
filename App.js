@@ -9,11 +9,13 @@ import { ScaledSheet } from 'react-native-size-matters';
 //CONTEXTS
 import useModalVisibilityGlobal from './src/hooks/useModalVisibilityGlobal';
 import useNetInfoGlobal from './src/hooks/useNetInfoGlobal';
-import useDeviceDiscovery from './src/hooks/useDeviceDiscovery';
+import useDeviceDiscoveryGlobal from './src/hooks/useDeviceDiscoveryGlobal';
+import useUserManagementGlobal from './src/hooks/useUserManagementGlobal';
 import {
   useModalContext,
   useNetInfoContext,
-  useDeviceDiscoveryContext
+  useDeviceDiscoveryContext,
+  useUserManagementContext
 } from './src/hooks/ContextProvider';
 
 
@@ -27,7 +29,8 @@ export default function App() {
 
   const ModalVisibilityGlobal = useModalVisibilityGlobal();
   const NetInfoGlobal = useNetInfoGlobal();
-  const DiscoveredDeviceGlobal = useDeviceDiscovery();
+  const DiscoveredDeviceGlobal = useDeviceDiscoveryGlobal();
+  const UserManagementGlobal = useUserManagementGlobal();
 
   if (!fontsLoaded) {
     return <AppLoading />;
@@ -38,9 +41,11 @@ export default function App() {
         <StatusBar style="auto" /> */}
       <useModalContext.Provider value={ModalVisibilityGlobal}>
         <useNetInfoContext.Provider value={NetInfoGlobal}>
-          <useDeviceDiscoveryContext.Provider value={DiscoveredDeviceGlobal}>
-            <HomeScreen />
-          </useDeviceDiscoveryContext.Provider>
+          <useUserManagementContext.Provider value={UserManagementGlobal}>
+            <useDeviceDiscoveryContext.Provider value={DiscoveredDeviceGlobal}>
+              <HomeScreen />
+            </useDeviceDiscoveryContext.Provider>
+          </useUserManagementContext.Provider>
         </useNetInfoContext.Provider>
       </useModalContext.Provider>
       {/* </View> */}
