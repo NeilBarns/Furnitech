@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "893115740258",
+    "firebase_url": "https://furnitech-37b23-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "furnitech-37b23",
+    "storage_bucket": "furnitech-37b23.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:893115740258:android:7b875b67019a3e8745e13b",
+        "android_client_info": {
+          "package_name": "com.neilbarnedo.furnitech"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "893115740258-jo2l91bbhfd1ot068s15pjhhcume1grq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgUiqjTd5Fsy3KLDy82ek5WrM9Mert3EY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "893115740258-jo2l91bbhfd1ot068s15pjhhcume1grq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

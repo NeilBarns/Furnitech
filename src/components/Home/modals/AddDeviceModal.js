@@ -5,7 +5,11 @@ import React, { useContext, useState, useEffect } from 'react'
 import Style from './AddDeviceModalStyle'
 
 //CONTEXTS
-import { useModalContext, useNetInfoContext } from '../../../hooks/ContextProvider';
+import {
+    useModalContext,
+    useNetInfoContext,
+    useDeviceDiscoveryContext
+} from '../../../hooks/ContextProvider';
 
 //EXTERNAL IMPORTS
 import NetInfo from '@react-native-community/netinfo';
@@ -20,6 +24,9 @@ const AddDeviceModal = () => {
 
     const { addDeviceModalVisibility,
         action_changes } = useContext(useModalContext);
+
+    const { savedSelectedRoomName } = useContext(useDeviceDiscoveryContext);
+
     let { ssid, isConnected, isLocationServiceEnabled, network_changes } = useContext(useNetInfoContext);
 
     const [revealPassord, setRevealPassword] = useState(true);
@@ -80,7 +87,7 @@ const AddDeviceModal = () => {
                 <View style={Style.mainContainer}>
 
                     <View>
-                        <Text style={Style.addDeviceLabel}>Add Device</Text>
+                        <Text style={Style.addDeviceLabel}>Add Device to {savedSelectedRoomName}</Text>
                         <Text style={Style.descriptionLabel}>Connect your phone to 2.4/4G connection{"\n"}to make sure that the Smart Devices will be functional.</Text>
                     </View>
 
@@ -186,14 +193,14 @@ const AddDeviceModal = () => {
 
                             <View style={Style.detectBtnContainer}>
                                 <TouchableOpacity style={Style.detectBtn}
-                                onPress={() => {
-                                    clearInterval(intervalID);
-                                    action_changes({ type: 'showWiFiDeviceDetectionModal' });
+                                    onPress={() => {
+                                        clearInterval(intervalID);
+                                        action_changes({ type: 'showWiFiDeviceDetectionModal' });
 
-                                    let wifiPwd = inputtedPwd;
-                                    network_changes({ type: 'saveWiFIPwd', payload: { wifiPwd } });
+                                        let wifiPwd = inputtedPwd;
+                                        network_changes({ type: 'saveWiFIPwd', payload: { wifiPwd } });
 
-                                }}>
+                                    }}>
                                     <Text style={Style.detectBtnLabel}>DETECT</Text>
                                 </TouchableOpacity>
                             </View>
@@ -203,6 +210,7 @@ const AddDeviceModal = () => {
                     <View style={Style.cancelBtnContainer}>
                         <TouchableOpacity style={Style.cancelBtn}
                             onPress={() => {
+                                clearInterval(intervalID);
                                 action_changes({ type: 'hideAddDeviceModal' });
                             }}>
                             <Text style={Style.cancelBtnLabel}>CANCEL</Text>
@@ -213,7 +221,7 @@ const AddDeviceModal = () => {
 
 
             <DetectWiFIDevices />
-            
+
         </Modal>
     )
 }

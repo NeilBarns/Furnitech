@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Text, View, StatusBar, TouchableOpacity, ScrollView, Image } from 'react-native'
-import { scale, ScaledSheet } from 'react-native-size-matters';
+import { Text, View, TouchableOpacity, ScrollView, Image } from 'react-native'
+import { scale } from 'react-native-size-matters';
 import {
     Ionicons,
     Octicons,
@@ -10,7 +10,10 @@ import Styles from '../../screens/Home/HomeScreenStyles';
 
 
 //CONTEXTS
-import { useModalContext, useNetInfoContext } from '../../hooks/ContextProvider';
+import {
+    useModalContext,
+    useNetInfoContext
+} from '../../hooks/ContextProvider';
 
 //EXTERNAL IMPORTS
 import Constants from 'expo-constants';
@@ -141,7 +144,7 @@ const Header = () => {
                     </TouchableOpacity>
                 </View>
             </View>
-            
+
             <ScrollView style={Styles.roomListContainer}
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}>

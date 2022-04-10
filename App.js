@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { Text, View } from 'react-native';
+import { useEffect } from 'react';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 import { RootSiblingParent } from 'react-native-root-siblings';
@@ -18,6 +19,8 @@ import {
   useUserManagementContext
 } from './src/hooks/ContextProvider';
 
+import app from './src/hooks/FirebaseOperations';
+
 
 
 export default function App() {
@@ -26,6 +29,10 @@ export default function App() {
     'Poppins-Regular': require('./assets/fonts/Poppins-Regular.ttf'),
   });
 
+  useEffect(() => {
+    app;
+  }, [])
+  
 
   const ModalVisibilityGlobal = useModalVisibilityGlobal();
   const NetInfoGlobal = useNetInfoGlobal();

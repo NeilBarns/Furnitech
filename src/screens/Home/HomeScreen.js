@@ -6,6 +6,7 @@ import Styles from './HomeScreenStyles'
 import Header from '../../components/Home/Header'
 import DHT from '../../components/Home/DHT';
 import BottomSheetDeviceList from '../../components/Home/BottomSheetDeviceList';
+import {toastConfig} from '../../general/Toasts'
 
 
 //MODAL
@@ -15,14 +16,18 @@ import AddDeviceModal from '../../components/Home/modals/AddDeviceModal';
 import {
     useModalContext,
     useNetInfoContext,
-    useUserManagementContext
+    useUserManagementContext,
+    useDeviceDiscoveryContext
 } from '../../hooks/ContextProvider';
 
 //EXTERNAL IMPORTS
 import NetInfo from '@react-native-community/netinfo';
+import Toast from 'react-native-toast-message';
 
-//ASYNC STORAGE
+//STORAGE
 import AsyncStorageOperations from '../../hooks/AsyncStorageOperations';
+import { getDatabase, ref, onValue } from "firebase/database";
+
 
 const tempDevices = [
     {
@@ -85,16 +90,34 @@ const HomeScreen = () => {
     const { addDeviceModalVisibility } = useContext(useModalContext);
     const { network_changes } = useContext(useNetInfoContext);
     const { user_changes } = useContext(useUserManagementContext);
+    const { device_discovery_changes, savedSelectedRoomID } = useContext(useDeviceDiscoveryContext);
 
     const { getUserID } = AsyncStorageOperations();
 
-    var userID;
+    var userID,
+        selectedRoomID = 0;
 
     useEffect(() => {
         (async () => {
-            userID = await getUserID();
-            user_changes({ type: 'saveUserId', payload: { userID }})
+            await device_discovery_changes({ type: 'saveSelectedRoomID', payload: { selectedRoomID } })
         })();
+
+        (async () => {
+            userID = await getUserID();
+            await user_changes({ type: 'saveUserId', payload: { userID } })
+        })();
+
+
+
+
+        // const db = getDatabase();
+        // const reference = ref(db, 'Users/');
+        // onValue(reference, (snapshot) => {
+        //     const highscore = snapshot.val().person1;
+        //     console.log(highscore);
+        // });
+
+
     }, []);
 
     useEffect(() => {
@@ -137,6 +160,8 @@ const HomeScreen = () => {
             <BottomSheetDeviceList refRBSheet={refRBSheet} />
 
             <AddDeviceModal />
+
+            <Toast config={toastConfig} />
 
         </View>
     )

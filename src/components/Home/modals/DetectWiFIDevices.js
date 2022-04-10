@@ -1,9 +1,10 @@
 import { View, Text, Modal, Image, TouchableOpacity } from 'react-native'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useRef } from 'react'
 import {
     fetchDeviceByIPAddress,
     insertUserDevice
 } from '../../../hooks/APIInterface';
+import { DeviceAdded } from '../../../general/Toasts'
 
 //STYLE
 import Style from './DetectWiFIDevicesStyle'
@@ -22,6 +23,7 @@ import SmartConfig from 'react-native-smartconfig-quan';
 const SmartConfiguration = (ssid,
     bssid,
     ssidPwd,
+    savedSelectedRoomID,
     device_discovery_changes) => {
 
     let foundDevice = false;
@@ -41,19 +43,24 @@ const SmartConfiguration = (ssid,
             let ipAddress = data.ip;
 
             (async () => {
-                var discoveredDevice = await fetchDeviceByIPAddress({ ipAddress: ipAddress });
+                var discoveredDevice = await fetchDeviceByIPAddress({ ipAddress: ipAddress, roomID: savedSelectedRoomID });
+
                 var discoveredDeviceItemName = discoveredDevice[0].itemName;
                 var discoveredDeviceID = discoveredDevice[0].deviceID;
                 var discoveredDeviceFBName = discoveredDevice[0].firebaseName;
+                var discoveredDeviceFBJSON = discoveredDevice[0].firebaseJSON;
                 var discoveredDeviceCategory = discoveredDevice[0].categoryName;
                 var discoveredDeviceCategoryImage = discoveredDevice[0].categoryImage;
+                var discoveredDeviceCategoryExistence = discoveredDevice[0].categoryExistence;
 
                 await device_discovery_changes({ type: 'saveDiscoveredWifiDevice', payload: { discoveredDevice } });
                 await device_discovery_changes({ type: 'saveDiscoveredWifiDeviceItemName', payload: { discoveredDeviceItemName } });
                 await device_discovery_changes({ type: 'saveDiscoveredWifiDeviceID', payload: { discoveredDeviceID } });
                 await device_discovery_changes({ type: 'saveDiscoveredWifiDeviceFBName', payload: { discoveredDeviceFBName } });
+                await device_discovery_changes({ type: 'saveDiscoveredWifiDeviceFBJSON', payload: { discoveredDeviceFBJSON } });
                 await device_discovery_changes({ type: 'saveDiscoveredWifiDeviceCategory', payload: { discoveredDeviceCategory } });
                 await device_discovery_changes({ type: 'saveDiscoveredWifiDeviceCategoryImage', payload: { discoveredDeviceCategoryImage } });
+                await device_discovery_changes({ type: 'saveDiscoveredWifiDeviceCategoryExistence', payload: { discoveredDeviceCategoryExistence } });
             })();
 
             device_discovery_changes({ type: 'hasWifiDeviceDiscovered', payload: { foundDevice } });
@@ -75,6 +82,7 @@ const DetectWiFIDevices = () => {
     const { loggedUserID } = useContext(useUserManagementContext);
 
     const { hasWifiDeviceDiscovered,
+        savedSelectedRoomID,
         discoveredWifiDevice,
         discoveredWifiDeviceItemName,
         discoveredWifiDeviceID,
@@ -86,8 +94,18 @@ const DetectWiFIDevices = () => {
     const { ssid, bssid, wifiPwd } = useContext(useNetInfoContext);
 
     const saveUserDevice = async () => {
+
         (async () => {
-            await insertUserDevice({ userID: loggedUserID, deviceID: discoveredWifiDeviceID });
+            await insertUserDevice({
+                userID: loggedUserID,
+                deviceID: discoveredWifiDeviceID,
+                roomID: savedSelectedRoomID
+            });
+
+            await action_changes({ type: 'hideWiFiDeviceDetectionModal' });
+            await action_changes({ type: 'hideAddDeviceModal' });
+            await device_discovery_changes({ type: 'initializeDeviceDiscovery', payload: null });
+            DeviceAdded(discoveredWifiDeviceCategory);
         })();
     }
 
@@ -98,15 +116,15 @@ const DetectWiFIDevices = () => {
             animationType={'slide'}
             statusBarTranslucent={true}
             onShow={() => {
-                // (async () => {
-                //     await SmartConfiguration(ssid,
-                //         bssid,
-                //         wifiPwd,
-                //         device_discovery_changes,
-                //         discoveredWifiDevice);
-                // })();
+                (async () => {
+                    await SmartConfiguration(ssid,
+                        bssid,
+                        wifiPwd,
+                        savedSelectedRoomID,
+                        device_discovery_changes);
+                })();
 
-                saveUserDevice();
+                // saveUserDevice();
             }}>
             <View style={Style.container}>
                 <View style={Style.centerContainer}>

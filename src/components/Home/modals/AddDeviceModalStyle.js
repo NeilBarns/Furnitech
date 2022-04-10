@@ -22,7 +22,7 @@ const AddDeviceModalStyle = ScaledSheet.create({
 
     addDeviceLabel: {
         fontFamily: 'Nunito-Bold',
-        fontSize: '35@s'
+        fontSize: '22@s'
     },
 
     descriptionLabel: {
