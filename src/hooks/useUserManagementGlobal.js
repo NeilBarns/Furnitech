@@ -2,14 +2,17 @@ import { useState } from 'react'
 
 const useUserManagementGlobal = () => {
 
-    const [loggedUserID, setLoggedUserID] = useState('');
+    const [loggedUserID, setLoggedUserID] = useState();
+    const [roomCategoryDetails, setRoomCategoryDetails] = useState();
 
-    const user_changes = (action) => {
+    const user_changes = async (action) => {
         const { type, payload } = action;
 
-        switch (type) {
+        switch ( await type ) {
             case 'saveUserId':
-                return setLoggedUserID(payload.userID);
+                return await setLoggedUserID(await payload.userID);
+            case 'saveRoomCategoryDetails':
+                return await setRoomCategoryDetails(await payload.saveRoomCategoryDetails);
             default:
                 return null;
         }
@@ -17,6 +20,7 @@ const useUserManagementGlobal = () => {
 
     return {
         loggedUserID,
+        roomCategoryDetails,
         user_changes
     }
 }

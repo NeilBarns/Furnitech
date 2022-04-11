@@ -5,10 +5,10 @@ const useModalVisibilityGlobal = () => {
     const [addDeviceModalVisibility, setaddDeviceModalVisibility] = useState(false);
     const [WiFiDeviceDetectionModalVisibility, setWiFiDeviceDetectionModalVisibility] = useState(false);
 
-    const action_changes = (action) => {
+    const action_changes = async (action) => {
         const { type } = action;
 
-        switch (type) {
+        switch (await type) {
             case 'showAddDeviceModal':
                 return setaddDeviceModalVisibility(true);
             case 'hideAddDeviceModal':

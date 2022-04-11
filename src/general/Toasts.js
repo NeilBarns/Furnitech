@@ -54,7 +54,7 @@ export const DeviceAdded = (discoveredWifiDeviceCategory) => {
     Toast.show({
         type: 'success',
         text1: 'Device Added',
-        text2: `Device added to ${discoveredWifiDeviceCategory} category 🦾`,
+        text2: `Device added to ${discoveredWifiDeviceCategory} category 🚀`,
         position: 'bottom',
         bottomOffset: 80
     });

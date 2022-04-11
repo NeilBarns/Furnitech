@@ -2,9 +2,11 @@ import { View, Text, Modal, Image, TouchableOpacity } from 'react-native'
 import React, { useContext, useState, useRef } from 'react'
 import {
     fetchDeviceByIPAddress,
-    insertUserDevice
+    insertUserDevice,
+    insertUserCategory,
+    getCategoryByRoom
 } from '../../../hooks/APIInterface';
-import { DeviceAdded } from '../../../general/Toasts'
+import { DeviceAdded as DeviceAddedToast } from '../../../general/Toasts'
 
 //STYLE
 import Style from './DetectWiFIDevicesStyle'
@@ -49,6 +51,7 @@ const SmartConfiguration = (ssid,
                 var discoveredDeviceID = discoveredDevice[0].deviceID;
                 var discoveredDeviceFBName = discoveredDevice[0].firebaseName;
                 var discoveredDeviceFBJSON = discoveredDevice[0].firebaseJSON;
+                var discoveredDeviceCategoryID = discoveredDevice[0].categoryID;
                 var discoveredDeviceCategory = discoveredDevice[0].categoryName;
                 var discoveredDeviceCategoryImage = discoveredDevice[0].categoryImage;
                 var discoveredDeviceCategoryExistence = discoveredDevice[0].categoryExistence;
@@ -58,12 +61,12 @@ const SmartConfiguration = (ssid,
                 await device_discovery_changes({ type: 'saveDiscoveredWifiDeviceID', payload: { discoveredDeviceID } });
                 await device_discovery_changes({ type: 'saveDiscoveredWifiDeviceFBName', payload: { discoveredDeviceFBName } });
                 await device_discovery_changes({ type: 'saveDiscoveredWifiDeviceFBJSON', payload: { discoveredDeviceFBJSON } });
+                await device_discovery_changes({ type: 'saveDiscoveredWifiDeviceCategoryID', payload: { discoveredDeviceCategoryID } });
                 await device_discovery_changes({ type: 'saveDiscoveredWifiDeviceCategory', payload: { discoveredDeviceCategory } });
                 await device_discovery_changes({ type: 'saveDiscoveredWifiDeviceCategoryImage', payload: { discoveredDeviceCategoryImage } });
                 await device_discovery_changes({ type: 'saveDiscoveredWifiDeviceCategoryExistence', payload: { discoveredDeviceCategoryExistence } });
+                await device_discovery_changes({ type: 'hasWifiDeviceDiscovered', payload: { foundDevice } });
             })();
-
-            device_discovery_changes({ type: 'hasWifiDeviceDiscovered', payload: { foundDevice } });
 
         } else {
             if (!foundDevice) {
@@ -79,7 +82,7 @@ const DetectWiFIDevices = () => {
 
     const { WiFiDeviceDetectionModalVisibility,
         action_changes } = useContext(useModalContext);
-    const { loggedUserID } = useContext(useUserManagementContext);
+    const { loggedUserID, user_changes } = useContext(useUserManagementContext);
 
     const { hasWifiDeviceDiscovered,
         savedSelectedRoomID,
@@ -87,8 +90,10 @@ const DetectWiFIDevices = () => {
         discoveredWifiDeviceItemName,
         discoveredWifiDeviceID,
         discoveredWifiDeviceFBName,
+        discoveredWifiDeviceCategoryID,
         discoveredWifiDeviceCategory,
         discoveredWifiDeviceCategoryImage,
+        discoveredWifiDeviceCategoryExistence,
         device_discovery_changes } = useContext(useDeviceDiscoveryContext);
 
     const { ssid, bssid, wifiPwd } = useContext(useNetInfoContext);
@@ -105,7 +110,15 @@ const DetectWiFIDevices = () => {
             await action_changes({ type: 'hideWiFiDeviceDetectionModal' });
             await action_changes({ type: 'hideAddDeviceModal' });
             await device_discovery_changes({ type: 'initializeDeviceDiscovery', payload: null });
-            DeviceAdded(discoveredWifiDeviceCategory);
+            await insertUserCategory({
+                userID: loggedUserID,
+                categoryID: discoveredWifiDeviceCategoryID,
+                roomID: savedSelectedRoomID,
+                categoryExistence: discoveredWifiDeviceCategoryExistence
+            });
+            var roomCategoryDetails = await getCategoryByRoom({ roomID: savedSelectedRoomID })
+            await user_changes({ type: 'saveRoomCategoryDetails', payload: { roomCategoryDetails }})
+            DeviceAddedToast(discoveredWifiDeviceCategory);
         })();
     }
 

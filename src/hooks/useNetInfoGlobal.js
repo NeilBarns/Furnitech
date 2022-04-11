@@ -8,10 +8,10 @@ const useNetInfoGlobal = () => {
     const [isConnected, setIsConnected] = useState(false);
     const [isLocationServiceEnabled, setIsLocationServiceEnabled] = useState(false);
 
-    const network_changes = (action) => {
+    const network_changes = async (action) => {
         const { type, payload } = action;
 
-        switch (type) {
+        switch (await type) {
             case 'saveSSID':
                 return setSSID(payload.ssid);
             case 'saveBSSID':

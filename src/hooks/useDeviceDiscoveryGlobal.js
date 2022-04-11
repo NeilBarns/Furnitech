@@ -4,20 +4,21 @@ const useDeviceDiscoveryGlobal = () => {
 
     const [hasWifiDeviceDiscovered, setHasWifiDeviceDiscovered] = useState(false);
     const [savedSelectedRoomName, setSelectedRoomName] = useState('Living Room');
-    const [savedSelectedRoomID, setSelectedRoomID] = useState(0);
+    const [savedSelectedRoomID, setSelectedRoomID] = useState(1);
     const [discoveredWifiDevice, setDiscoveredWifiDevice] = useState();
     const [discoveredWifiDeviceItemName, setDiscoveredWifiDeviceItemName] = useState();
     const [discoveredWifiDeviceID, setDiscoveredWifiDeviceID] = useState('switch0');
     const [discoveredWifiDeviceFBName, setDiscoveredWifiDeviceFBName] = useState();
     const [discoveredWifiDeviceFBJSON, setDiscoveredWifiDeviceFBJSON] = useState();
+    const [discoveredWifiDeviceCategoryID, setDiscoveredWifiDeviceCategoryID] = useState();
     const [discoveredWifiDeviceCategory, setDiscoveredWifiDeviceCategory] = useState();
     const [discoveredWifiDeviceCategoryImage, setDiscoveredWifiDeviceCategoryImage] = useState();
     const [discoveredWifiDeviceCategoryExistence, setDiscoveredWifiDeviceCategoryExistence] = useState();
 
-    const device_discovery_changes = (action) => {
+    const device_discovery_changes = async (action) => {
         const { type, payload } = action;
 
-        switch (type) {
+        switch (await type) {
             case 'hasWifiDeviceDiscovered':
                 return setHasWifiDeviceDiscovered(payload.foundDevice);
             case 'saveSelectedRoomName':
@@ -34,6 +35,8 @@ const useDeviceDiscoveryGlobal = () => {
                 return setDiscoveredWifiDeviceFBName(payload.discoveredDeviceFBName);
             case 'saveDiscoveredWifiDeviceFBJSON':
                 return setDiscoveredWifiDeviceFBJSON(payload.discoveredDeviceFBJSON);
+            case 'saveDiscoveredWifiDeviceCategoryID':
+                return setDiscoveredWifiDeviceCategoryID(payload.discoveredDeviceCategoryID);
             case 'saveDiscoveredWifiDeviceCategory':
                 return setDiscoveredWifiDeviceCategory(payload.discoveredDeviceCategory);
             case 'saveDiscoveredWifiDeviceCategoryImage':
@@ -60,6 +63,7 @@ const useDeviceDiscoveryGlobal = () => {
         discoveredWifiDeviceID,
         discoveredWifiDeviceFBName,
         discoveredWifiDeviceFBJSON,
+        discoveredWifiDeviceCategoryID,
         discoveredWifiDeviceCategory,
         discoveredWifiDeviceCategoryImage,
         discoveredWifiDeviceCategoryExistence,

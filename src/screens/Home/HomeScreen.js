@@ -1,12 +1,13 @@
 import React, { useRef, useEffect, useState, useContext } from 'react'
 import { Text, View, StatusBar, Pressable, ScrollView, Image, Alert } from 'react-native'
 import Styles from './HomeScreenStyles'
+import { getCategoryByRoom } from '../../hooks/APIInterface';
 
 //COMPONENTS
 import Header from '../../components/Home/Header'
 import DHT from '../../components/Home/DHT';
 import BottomSheetDeviceList from '../../components/Home/BottomSheetDeviceList';
-import {toastConfig} from '../../general/Toasts'
+import { toastConfig } from '../../general/Toasts'
 
 
 //MODAL
@@ -51,13 +52,10 @@ const tempDevices = [
     }
 ]
 
-const DeviceCard = ({ categoryName, imageUrl, numberofDevices, refRBSheet, ssid, bssid }) => {
+const DeviceCard = ({ categoryName, imageUrl, numberofDevices }) => {
 
     return (
-        <Pressable style={Styles.device}
-            onPress={() => {
-
-            }}>
+        <Pressable style={Styles.device}>
             <View style={Styles.actualDevice}>
                 <View style={Styles.deviceCountContainer}>
                     <View style={Styles.deviceCountRound}>
@@ -89,13 +87,13 @@ const HomeScreen = () => {
 
     const { addDeviceModalVisibility } = useContext(useModalContext);
     const { network_changes } = useContext(useNetInfoContext);
-    const { user_changes } = useContext(useUserManagementContext);
+    const { user_changes, roomCategoryDetails } = useContext(useUserManagementContext);
     const { device_discovery_changes, savedSelectedRoomID } = useContext(useDeviceDiscoveryContext);
 
     const { getUserID } = AsyncStorageOperations();
 
-    var userID,
-        selectedRoomID = 0;
+    var userID = 1,
+        selectedRoomID = 1;
 
     useEffect(() => {
         (async () => {
@@ -107,6 +105,11 @@ const HomeScreen = () => {
             await user_changes({ type: 'saveUserId', payload: { userID } })
         })();
 
+        (async () => {
+            var saveRoomCategoryDetails = await getCategoryByRoom({ roomID: savedSelectedRoomID })
+
+            await user_changes({ type: 'saveRoomCategoryDetails', payload: { saveRoomCategoryDetails } })
+        })();
 
 
 
@@ -143,17 +146,14 @@ const HomeScreen = () => {
             <ScrollView style={Styles.deviceScroller}
                 showsVerticalScrollIndicator={false}>
                 <View style={Styles.deviceContainer}>
-
-                    {tempDevices.map((category, id) => (
-                        <DeviceCard key={category.id}
-                            categoryName={category.categoryName}
-                            imageUrl={category.imageUrl}
-                            numberofDevices={category.numberofDevices}
-                            refRBSheet={refRBSheet}
-                            ssid
-                            bssid />
-                    ))}
-
+                    {roomCategoryDetails !== undefined &&
+                        roomCategoryDetails.map((category, categoryID) => (
+                            <DeviceCard key={category.categoryID}
+                                categoryName={category.categoryName}
+                                imageUrl={category.categoryImage}
+                                numberofDevices={category.device_count} />
+                        ))
+                    }
                 </View>
             </ScrollView>
 
