@@ -3,8 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const AsyncStorageOperations = () => {
 
     const initializeStorage = async () => {
-        // await AsyncStorage.clear()
-        // await AsyncStorage.setItem('@userID', '1');
+        await AsyncStorage.clear()
+        await AsyncStorage.setItem('@userID', 'NeilBarns');
         // let keys = []
         // try {
         //     keys = await AsyncStorage.getAllKeys()

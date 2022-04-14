@@ -12,3 +12,4 @@ expo-location
 @react-native-async-storage/async-storage
 react-native-root-toast
 react-native-toast-message
+@react-native-community/slider

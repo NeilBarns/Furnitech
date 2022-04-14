@@ -7,6 +7,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Octicons from 'react-native-vector-icons/Octicons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 
 export {
@@ -18,5 +19,6 @@ export {
         MaterialCommunityIcons,
         MaterialIcons,
         FontAwesome,
-        Octicons
+        Octicons,
+        AntDesign
 }

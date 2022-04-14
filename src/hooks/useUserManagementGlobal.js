@@ -2,17 +2,20 @@ import { useState } from 'react'
 
 const useUserManagementGlobal = () => {
 
-    const [loggedUserID, setLoggedUserID] = useState();
+    const [loggedUserID, setLoggedUserID] = useState('NeilBarns');
     const [roomCategoryDetails, setRoomCategoryDetails] = useState();
+    const [deviceList, setDeviceList] = useState();
 
     const user_changes = async (action) => {
         const { type, payload } = action;
 
-        switch ( await type ) {
+        switch (await type) {
             case 'saveUserId':
-                return await setLoggedUserID(await payload.userID);
+                return setLoggedUserID(await payload.userID);
             case 'saveRoomCategoryDetails':
-                return await setRoomCategoryDetails(await payload.saveRoomCategoryDetails);
+                return setRoomCategoryDetails(await payload.saveRoomCategoryDetails);
+            case 'saveDeviceList':
+                return setDeviceList(await payload.fetchedDeviceList);
             default:
                 return null;
         }
@@ -21,6 +24,7 @@ const useUserManagementGlobal = () => {
     return {
         loggedUserID,
         roomCategoryDetails,
+        deviceList,
         user_changes
     }
 }

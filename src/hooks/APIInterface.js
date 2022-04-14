@@ -1,41 +1,47 @@
-export const fetchDeviceByIPAddress = async (payload) => {
+import FirebaseOperations from "./FirebaseOperations";
 
-    const { ipAddress, roomID } = payload;
-    let modified_ipAddress = ipAddress.split('.').join('');
-    let urlRequest = `http://192.168.100.7:8000/devices/deviceIP/${modified_ipAddress}/roomID/${roomID}`;
+const APIInterface = () => {
 
-    try {
-        const response = await fetch(urlRequest);
-        const json = await response.json();
-        return json;
-    } catch (error) {
-        console.error(error);
-    }
-}
+    const { insertNewDevicetoFirebase,
+        insertNewCategorytoFirebase } = FirebaseOperations();
 
-export const insertUserDevice = async (payload) => {
-    const { userID, deviceID, roomID } = payload;
+    const fetchDeviceByIPAddress = async (payload) => {
 
-    let urlRequest = `http://192.168.100.7:8000/devicesprovision/userid/${userID}/deviceid/${deviceID}/roomid/${roomID}`;
+        const { ipAddress, roomID } = payload;
+        let modified_ipAddress = ipAddress.split('.').join('');
+        let urlRequest = `http://192.168.100.7:8000/devices/deviceIP/${modified_ipAddress}/roomID/${roomID}`;
 
-    try {
-        const response = await fetch(urlRequest);
-        const json = await response.json();
-        return json;
-    } catch (error) {
-        console.error(error);
+        try {
+            const response = await fetch(urlRequest);
+            const json = await response.json();
+            return json;
+        } catch (error) {
+            console.error(error);
+        }
     }
 
-}
+    const insertUserDevice = async (payload) => {
+        const { userID, deviceID, roomID, firebaseAddressPath, firebaseDeviceDefinition } = payload;
+        await insertNewDevicetoDB(userID, deviceID, roomID, firebaseAddressPath);
+        await insertNewDevicetoFirebase({
+            firebaseDeviceAddress: firebaseAddressPath,
+            discoveredWifiDeviceFBJSON: firebaseDeviceDefinition
+        });
+    }
 
+    const insertNewDevicetoDB = async (userID, deviceID, roomID, firebaseAddressPath) => {
+        let urlRequest = `http://192.168.100.7:8000/devicesprovision/userid/${userID}/deviceid/${deviceID}/roomid/${roomID}/firebaseaddress/${firebaseAddressPath}`;
 
-export const insertUserCategory = async (payload) => {
-    const { userID,
-        categoryID,
-        roomID,
-        categoryExistence } = payload;
+        try {
+            const response = await fetch(urlRequest);
+            const json = await response.json();
+            return json;
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
-    if (categoryExistence < 1) {
+    const insertNewCategorytoDB = async (userID, categoryID, roomID) => {
         let urlRequest = `http://192.168.100.7:8000/devicesprovision/userid/${userID}/categoryid/${categoryID}/roomid/${roomID}`;
 
         try {
@@ -46,20 +52,62 @@ export const insertUserCategory = async (payload) => {
             console.error(error);
         }
     }
-}
 
-export const getCategoryByRoom = async (payload) => {
-    const { roomID } = payload;
+    const insertUserCategory = async (payload) => {
 
-    let urlRequest = `http://192.168.100.7:8000/devices/roomID/${roomID}`;
+        const { userID,
+            categoryID,
+            roomID,
+            categoryExistence,
+            firebaseCategoryPath } = payload;
 
-    try {
-        const response = await fetch(urlRequest);
-        const json = await response.json();
-        return json;
-    } catch (error) {
-        console.error(error);
+        await insertNewCategorytoFirebase({
+            firebaseCategoryAddress: firebaseCategoryPath,
+            category: categoryID
+        })
+
+        if (categoryExistence < 1) {
+            await insertNewCategorytoDB(userID, categoryID, roomID);
+
+        }
     }
 
+    const getCategoryByRoom = async (payload) => {
+        const { roomID } = payload;
+
+        let urlRequest = `http://192.168.100.7:8000/devices/roomID/${roomID}`;
+
+        try {
+            const response = await fetch(urlRequest);
+            const json = await response.json();
+            return json;
+        } catch (error) {
+            console.error(error);
+        }
+
+    }
+
+    const getFirebaseDetails = async (payload) => {
+        const { roomID, categoryID } = payload;
+
+        let urlRequest = `http://192.168.100.7:8000/devices/firebasedetails/roomID/${roomID}/categoryid/${categoryID}`;
+
+        try {
+            const response = await fetch(urlRequest);
+            const json = await response.json();
+            return json;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    return {
+        fetchDeviceByIPAddress,
+        insertUserDevice,
+        insertUserCategory,
+        getCategoryByRoom,
+        getFirebaseDetails
+    }
 }
+
+export default APIInterface
 

@@ -1,11 +1,7 @@
 import { View, Text, Modal, Image, TouchableOpacity } from 'react-native'
 import React, { useContext, useState, useRef } from 'react'
-import {
-    fetchDeviceByIPAddress,
-    insertUserDevice,
-    insertUserCategory,
-    getCategoryByRoom
-} from '../../../hooks/APIInterface';
+import APIInterface from '../../../hooks/APIInterface';
+
 import { DeviceAdded as DeviceAddedToast } from '../../../general/Toasts'
 
 //STYLE
@@ -26,13 +22,12 @@ const SmartConfiguration = (ssid,
     bssid,
     ssidPwd,
     savedSelectedRoomID,
-    device_discovery_changes) => {
+    device_discovery_changes,
+    fetchDeviceByIPAddress) => {
 
     let foundDevice = false;
 
     const TIME_OUT_SMART_CONFIG = 30 * 1000;
-
-    foundDevice = false;
 
     SmartConfig.start(ssid, bssid, ssidPwd, TIME_OUT_SMART_CONFIG, (event) => {
 
@@ -84,12 +79,19 @@ const DetectWiFIDevices = () => {
         action_changes } = useContext(useModalContext);
     const { loggedUserID, user_changes } = useContext(useUserManagementContext);
 
+    const { fetchDeviceByIPAddress,
+        insertUserDevice,
+        insertUserCategory,
+        getCategoryByRoom } = APIInterface();
+
     const { hasWifiDeviceDiscovered,
         savedSelectedRoomID,
+        savedSelectedRoomName,
         discoveredWifiDevice,
         discoveredWifiDeviceItemName,
         discoveredWifiDeviceID,
         discoveredWifiDeviceFBName,
+        discoveredWifiDeviceFBJSON,
         discoveredWifiDeviceCategoryID,
         discoveredWifiDeviceCategory,
         discoveredWifiDeviceCategoryImage,
@@ -101,23 +103,32 @@ const DetectWiFIDevices = () => {
     const saveUserDevice = async () => {
 
         (async () => {
-            await insertUserDevice({
-                userID: loggedUserID,
-                deviceID: discoveredWifiDeviceID,
-                roomID: savedSelectedRoomID
-            });
+            let firebaseCategoryAddress = `users/${loggedUserID}/categories/${discoveredWifiDeviceCategory}`;
+            let firebaseDeviceAddress = `users-${loggedUserID}-devices-${savedSelectedRoomID}-${discoveredWifiDeviceCategory}-${discoveredWifiDeviceID}`;
 
-            await action_changes({ type: 'hideWiFiDeviceDetectionModal' });
-            await action_changes({ type: 'hideAddDeviceModal' });
-            await device_discovery_changes({ type: 'initializeDeviceDiscovery', payload: null });
+
+            // await device_discovery_changes({ type: 'initializeDeviceDiscovery', payload: null });
             await insertUserCategory({
                 userID: loggedUserID,
                 categoryID: discoveredWifiDeviceCategoryID,
                 roomID: savedSelectedRoomID,
-                categoryExistence: discoveredWifiDeviceCategoryExistence
+                categoryExistence: discoveredWifiDeviceCategoryExistence,
+                firebaseCategoryPath: firebaseCategoryAddress
             });
-            var roomCategoryDetails = await getCategoryByRoom({ roomID: savedSelectedRoomID })
-            await user_changes({ type: 'saveRoomCategoryDetails', payload: { roomCategoryDetails }})
+
+            await insertUserDevice({
+                userID: loggedUserID,
+                deviceID: discoveredWifiDeviceID,
+                roomID: savedSelectedRoomID,
+                firebaseAddressPath: firebaseDeviceAddress,
+                firebaseDeviceDefinition: discoveredWifiDeviceFBJSON
+            });
+
+            var saveRoomCategoryDetails = await getCategoryByRoom({ roomID: savedSelectedRoomID })
+            await user_changes({ type: 'saveRoomCategoryDetails', payload: { saveRoomCategoryDetails } })
+
+            await action_changes({ type: 'hideWiFiDeviceDetectionModal' });
+            await action_changes({ type: 'hideAddDeviceModal' });
             DeviceAddedToast(discoveredWifiDeviceCategory);
         })();
     }
@@ -134,10 +145,9 @@ const DetectWiFIDevices = () => {
                         bssid,
                         wifiPwd,
                         savedSelectedRoomID,
-                        device_discovery_changes);
+                        device_discovery_changes,
+                        fetchDeviceByIPAddress);
                 })();
-
-                // saveUserDevice();
             }}>
             <View style={Style.container}>
                 <View style={Style.centerContainer}>

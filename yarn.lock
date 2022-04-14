@@ -1920,6 +1920,11 @@
   "resolved" "https://registry.npmjs.org/@react-native-community/netinfo/-/netinfo-7.1.3.tgz"
   "version" "7.1.3"
 
+"@react-native-community/slider@^4.2.1":
+  "integrity" "sha512-6HUS5HbB9bvEN4GiwBlxECgPWQIugHE+kfnxqX2jHUl1SE57MRpw00m1qVs4hXtEPQndBl6mAQiGbKCOtLPVbg=="
+  "resolved" "https://registry.npmjs.org/@react-native-community/slider/-/slider-4.2.1.tgz"
+  "version" "4.2.1"
+
 "@react-native-firebase/app@^14.7.0", "@react-native-firebase/app@14.7.0":
   "integrity" "sha512-/TdFv0L4AOEdKbAqmUu0yDXWq0Viw9sEX5mprPQDQbnctEJVwDLWehJkKx2CMiGeZox7VU2cshBLD0AC82XTtQ=="
   "resolved" "https://registry.npmjs.org/@react-native-firebase/app/-/app-14.7.0.tgz"

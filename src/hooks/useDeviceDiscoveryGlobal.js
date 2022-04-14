@@ -5,6 +5,8 @@ const useDeviceDiscoveryGlobal = () => {
     const [hasWifiDeviceDiscovered, setHasWifiDeviceDiscovered] = useState(false);
     const [savedSelectedRoomName, setSelectedRoomName] = useState('Living Room');
     const [savedSelectedRoomID, setSelectedRoomID] = useState(1);
+    const [savedSelectedCategoryID, setSelectedCategoryID] = useState(1);
+    const [savedSelectedCategoryName, setSelectedCategoryName] = useState(1);
     const [discoveredWifiDevice, setDiscoveredWifiDevice] = useState();
     const [discoveredWifiDeviceItemName, setDiscoveredWifiDeviceItemName] = useState();
     const [discoveredWifiDeviceID, setDiscoveredWifiDeviceID] = useState('switch0');
@@ -25,6 +27,10 @@ const useDeviceDiscoveryGlobal = () => {
                 return setSelectedRoomName(payload.selectedRoomName);
             case 'saveSelectedRoomID':
                 return setSelectedRoomID(payload.selectedRoomID);
+            case 'saveSelectedCategoryID':
+                return setSelectedCategoryID(payload.selectedCategoryID);
+            case 'saveSelectedCategoryName':
+                return setSelectedCategoryName(payload.selectedCategoryName);
             case 'saveDiscoveredWifiDevice':
                 return setDiscoveredWifiDevice(payload.discoveredDevice);
             case 'saveDiscoveredWifiDeviceItemName':
@@ -57,6 +63,8 @@ const useDeviceDiscoveryGlobal = () => {
     return {
         hasWifiDeviceDiscovered,
         savedSelectedRoomID,
+        savedSelectedCategoryID,
+        savedSelectedCategoryName,
         savedSelectedRoomName,
         discoveredWifiDevice,
         discoveredWifiDeviceItemName,
